@@ -1,0 +1,22 @@
+;( data-structure )
+;{
+;: -0x02                                size                                    length
+;:  0x00                                state                                   qword                                   current state
+;:  0x08                                seed                                    qword                                   initial state
+;:  0x10                                sbox                                    -> db[256]                              substitution box
+;:  0x18                                hash                                    qword                                   previous hash
+;}
+
+sasha0.size                             =                                       ( 0x00 )
+sasha0.state                            =                                       ( 0x00 + 2 )
+sasha0.seed                             =                                       ( 0x08 + 2 )
+sasha0.sbox                             =                                       ( 0x10 + 2 )
+sasha0.hash                             =                                       ( 0x18 + 2 )
+sasha0.length                           =                                       ( 0x20 )
+
+hash@__sasha0__                         equ                                     qword [ rdi + sasha0.hash   ]
+length@__sasha0__                       =                                       ( sasha0.length )
+sbox@__sasha0__                         equ                                     qword [ rdi + sasha0.sbox   ]
+seed@__sasha0__                         equ                                     qword [ rdi + sasha0.seed   ]
+size@__sasha0__                         equ                                     word  [ rdi + sasha0.size   ]
+state@__sasha0__                        equ                                     qword [ rdi + sasha0.state  ]

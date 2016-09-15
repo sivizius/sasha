@@ -19,19 +19,11 @@ __file__                                fix                                     
   xstat                                 'main'
   xstat                                 'on'
   xstat                                 'yapter'
-  stat                                  'cookies'
-  stat                                  'entities'
-  xlib                                  'buffers'
-  xlib                                  'echo'
+  stat                                  'main'
+  yalib                                 'buffers'
 ;}
 
-sbaExec64                               'sbaHeader.txt'
-sbaBuffers
-{
-  ;( text )
-  ;{
-  ;}
-}
+sbaExec64                               ;'sbaHeader.txt'
 sbaCode
 {
   ;( code )
@@ -39,18 +31,12 @@ sbaCode
     code                                'main'
   ;}
 }
-sbaData
+sbaModule                               'buffers'
 {
-  ;( vars )
-  ;{
-  ;}
-  ;( resv )
-  ;{
-  ;}
+  symbol buffers.new                    ->                                      'new'
 }
-sbaLibrary                              'buffers'
-sbaLibrary                              'echo'
+;sbaLibrary                              'echo'
 sbaInterface
 {
-  assign  init                          ->                                      'init'
+  assign  sasha0.init                   ->                                      'sasha0'
 }

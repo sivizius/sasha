@@ -1,0 +1,105 @@
+sasha0:
+  .init:
+  ;( I/O )
+  ;{
+  ;:  rax                               ignored                                 unchanged
+  ;:  rbx                               ignored                                 ( *data + 2 )
+  ;:  rcx                               ignored                                 length@__sasha0__
+  ;:  rdx   lib2arg                     ignored                                 @absorb()
+  ;:  rsi   lib1arg                     sbox                                    @squeeze()
+  ;:  rdi   lib0arg                     seed                                    *data
+  ;}
+  ;{
+    push                                lib1arg
+    push                                lib0arg
+      buffers_new                       length@__sasha0__
+    pop                                 rdx
+    pop                                 rsi
+    mov                                 seed@__sasha0__,                        rdx
+    mov                                 sbox@__sasha0__,                        rsi
+    mov                                 state@__sasha0__,                       rdx
+    lea                                 rsi,                                    [ .squeeze ]
+    lea                                 rdx,                                    [ .absorb ]
+    ret
+  ;}
+
+  .absorb:
+  ;( I/O )
+  ;{
+  ;:  rax   lib0ret                     char                                    state
+  ;:  rbx                               ignored                                 *sbox
+  ;:  rcx                               ignored                                 unchanged
+  ;:  rdx   lib2arg                     ignored                                 null
+  ;:  rsi   lib1arg                     ignored                                 unchanged
+  ;:  rdi   lib0arg                     *data                                   *data
+  ;:  r11                               ignored                                 previous state
+  ;}
+  ;{
+    mov                                 r11,                                    state@__sasha0__
+    mov                                 rbx,                                    sbox@__sasha0__
+    call                                .absorb.raw
+    mov                                 state@__sasha0__,                       rax
+    ret
+  ;}
+  .absorb.raw:
+  ;( I/O )
+  ;{
+  ;:  rax   lib0ret                     char                                    state
+  ;:  rbx                               *sbox                                   *sbox
+  ;:  rcx                               ignored                                 unchanged
+  ;:  rdx   lib2arg                     ignored                                 null
+  ;:  rsi   lib1arg                     ignored                                 unchanged
+  ;:  rdi   lib0arg                     ignored                                 unchanged
+  ;:  r11                               state                                   previous state
+  ;}
+  ;{
+    xor                                 rax,                                    r11
+    ;( for k = 7; k > 0; k-- )
+      mov                               rdx,                                    ( 7 )
+      .loop:
+    ;{
+      xlatb
+      rol                               rax,                                    ( 17 )
+      xor                               rax,                                    r11
+      dec                               rdx
+      jnz                               .loop
+    ;}
+    .squeeze.return:
+    ret
+  ;}
+  .squeeze:
+  ;( I/O )
+  ;{
+  ;:  rax   lib0ret                     ignored                                 state
+  ;:  rbx                               ignored                                 *sbox
+  ;:  rcx                               ignored                                 unchanged
+  ;:  rdx   lib2arg                     ignored                                 state.size ( = 8b )
+  ;:  rsi   lib1arg                     ignored                                 *state
+  ;:  rdi   lib0arg                     *data                                   *data
+  ;}
+  ;{
+    mov                                 rax,                                    state@__sasha0__
+    mov                                 rbx,                                    sbox@__sasha0__
+    .squeeze.raw:
+    ;{
+    ;:  rax   lib0ret                   state                                   state
+    ;:  rbx                             *sbox                                   *sbox
+    ;:  rcx                             ignored                                 unchanged
+    ;:  rdx   lib2arg                   ignored                                 null
+    ;:  rsi   lib1arg                   ignored                                 unchanged
+    ;:  rdi   lib0arg                   null                                    null
+    ;}
+    ;{
+      mov                               r11,                                    rax
+      mov                               rdx,                                    ( 7 * 7 )
+      call                              .loop
+    ;}
+    flags                               rdi
+    jz                                  .squeeze.return
+    mov                                 rsi,                                    seed@__sasha0__
+    mov                                 hash@__sasha0__,                        rax
+    mov                                 state@__sasha0__,                       rsi
+    mov                                 rdx,                                    8
+    lea                                 rsi,                                    hash@__sasha0__
+    ret
+  ;}
